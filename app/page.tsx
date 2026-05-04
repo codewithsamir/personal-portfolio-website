@@ -121,7 +121,7 @@ export default async function Home() {
     <>
       <Navbar />
       <Hero personalInfo={data.personal} />
-      <About personalInfo={data.personal} />
+      <About personalInfo={data.personal} projectsCount={data.projects.length} />
       <Skills skills={data.skills} />
       <Experience experience={data.experience} />
       <Projects projects={data.projects} />

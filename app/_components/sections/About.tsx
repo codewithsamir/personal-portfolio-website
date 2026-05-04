@@ -27,7 +27,7 @@ const strengths = [
    },
 ];
 
-export function About({ personalInfo }: { personalInfo: any }) {
+export function About({ personalInfo, projectsCount = 0 }: { personalInfo: any, projectsCount?: number }) {
    if (!personalInfo) return null;
 
    return (
@@ -77,11 +77,11 @@ export function About({ personalInfo }: { personalInfo: any }) {
 
                      <div className="pt-4 flex flex-wrap gap-4">
                         <div className="px-6 py-4 rounded-2xl bg-background border border-border">
-                           <p className="text-3xl font-black text-primary font-space-grotesk">{personalInfo.yearsOfExperience}</p>
+                           <p className="text-3xl font-black text-primary font-space-grotesk">{personalInfo.yearsOfExperience || "3+"}</p>
                            <p className="text-xs font-black text-muted-foreground uppercase tracking-widest">Years Exp</p>
                         </div>
                         <div className="px-6 py-4 rounded-2xl bg-background border border-border">
-                           <p className="text-3xl font-black text-primary font-space-grotesk">20+</p>
+                           <p className="text-3xl font-black text-primary font-space-grotesk">{projectsCount > 0 ? `${projectsCount}+` : "0"}</p>
                            <p className="text-xs font-black text-muted-foreground uppercase tracking-widest">Projects</p>
                         </div>
                      </div>

@@ -17,7 +17,20 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 });
 
-// Metadata is handled dynamically in page.tsx
+export const metadata: Metadata = {
+  manifest: "/manifest.json",
+  verification: {
+    google: "Geg6MyqELKWvjbsABit5WRiVwZ9ua-TMkbRUObCVSIA",
+  },
+};
+
+
+const profiles = {
+  linkedin: "https://np.linkedin.com/in/samir-rain-0467b7259",
+  youtube: "https://www.youtube.com/@codewithsamir",
+  github: "https://github.com/codewithsamir",
+  portfolio: ["https://samirrain.github.io/", "https://codewithsamir.github.io/"],
+};
 
 export default function RootLayout({
   children,
@@ -28,6 +41,17 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <ThemeInjector />
+
+        {/* Alternate portfolio sites */}
+        {profiles.portfolio.map((url) => (
+          <link key={url} rel="alternate" href={url} />
+        ))}
+
+        {/* Social profiles as Open Graph see_also */}
+        <meta property="og:see_also" content={profiles.linkedin} />
+        <meta property="og:see_also" content={profiles.youtube} />
+        <meta property="og:see_also" content={profiles.github} />
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -39,9 +63,11 @@ export default function RootLayout({
               "jobTitle": "Full Stack Developer",
               "alumniOf": "Rajarshi Janak University",
               "sameAs": [
-                "https://github.com/codewithsamir",
-                "https://linkedin.com/in/samir-rain",
-                "https://twitter.com/samir_rain"
+                profiles.github,
+                profiles.linkedin,
+                profiles.facebook,
+                profiles.instagram,
+                profiles.youtube
               ],
               "knowsAbout": ["React", "Next.js", "Django", "Node.js", "TypeScript", "AI Integration"],
               "description": "Full Stack Developer specialized in building scalable AI-powered web applications."

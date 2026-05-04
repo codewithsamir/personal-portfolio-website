@@ -4,6 +4,7 @@ import { Navbar } from "../_components/layout/Navbar";
 import { Footer } from "../_components/layout/Footer";
 import dbConnect from "@/lib/mongodb";
 import Project from "@/models/Project";
+import PersonalInfo from "@/models/PersonalInfo";
 
 export const dynamic = 'force-dynamic';
 
@@ -15,6 +16,9 @@ async function getProjects() {
 
 export default async function AllProjectsPage() {
   const projects = await getProjects();
+  await dbConnect();
+  const personalData = await PersonalInfo.findOne().lean();
+  const personalInfo = personalData ? JSON.parse(JSON.stringify(personalData)) : null;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -40,7 +44,7 @@ export default async function AllProjectsPage() {
           )}
         </div>
       </main>
-      <Footer />
+      <Footer personalInfo={personalInfo} />
     </div>
   );
 }
