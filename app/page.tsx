@@ -28,9 +28,9 @@ export async function generateMetadata(): Promise<Metadata> {
   
   if (!personal) return { title: "Portfolio" };
 
-  const name = personal.name;
-  const role = personal.role;
-  const summary = personal.summary;
+  const name = personal.name || "Samir Rain";
+  const role = personal.role || "Full Stack Developer";
+  const summary = personal.summary || "Full Stack Developer with 3+ years of experience designing and delivering end-to-end web applications.";
 
   return {
     metadataBase: new URL("https://samirrain.com.np"),
