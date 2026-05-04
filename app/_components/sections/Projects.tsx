@@ -10,10 +10,10 @@ export function Projects({ projects }: { projects: any[] }) {
   if (!projects || projects.length === 0) return null;
 
   // Filter to only featured projects for the landing page
-  const featuredProjects = projects.filter(p => p.featured).slice(0, 3);
+  const featuredProjects = projects.filter(p => p.featured).slice(0, 4);
   
-  // If no featured projects, just show first 3
-  const displayProjects = featuredProjects.length > 0 ? featuredProjects : projects.slice(0, 3);
+  // If no featured projects, just show first 4
+  const displayProjects = featuredProjects.length > 0 ? featuredProjects : projects.slice(0, 4);
 
   return (
     <section id="projects" className="py-24 px-6 relative overflow-hidden">
@@ -25,7 +25,7 @@ export function Projects({ projects }: { projects: any[] }) {
           description="A selection of my high-impact technical projects. Focused on performance, scalability, and user experience."
         />
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16">
+        <div className="grid md:grid-cols-2 gap-8 mt-16">
           {displayProjects.map((project, idx) => (
             <ProjectCard key={project._id || idx} project={project} index={idx} />
           ))}
