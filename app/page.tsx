@@ -1,65 +1,135 @@
-import Image from "next/image";
+import { Navbar } from "@/app/_components/layout/Navbar";
+import { Footer } from "@/app/_components/layout/Footer";
+import { Hero } from "@/app/_components/sections/Hero";
+import { About } from "@/app/_components/sections/About";
+import { Skills } from "@/app/_components/sections/Skills";
+import { Experience } from "@/app/_components/sections/Experience";
+import { Projects } from "@/app/_components/sections/Projects";
+import { Services } from "@/app/_components/sections/Services";
+import { Education } from "@/app/_components/sections/Education";
+import { Certifications } from "@/app/_components/sections/Certifications";
+import { Contact } from "@/app/_components/sections/Contact";
+import dbConnect from "@/lib/mongodb";
+import PersonalInfo from "@/models/PersonalInfo";
+import Project from "@/models/Project";
+import ExperienceModel from "@/models/Experience";
+import Skill from "@/models/Skill";
+import Service from "@/models/Service";
+import EducationModel from "@/models/Education";
+import Certification from "@/models/Certification";
 
-export default function Home() {
+import { Metadata } from "next";
+
+export const dynamic = 'force-dynamic';
+
+export async function generateMetadata(): Promise<Metadata> {
+  await dbConnect();
+  const personal = await PersonalInfo.findOne().lean();
+  
+  if (!personal) return { title: "Portfolio" };
+
+  const name = personal.name;
+  const role = personal.role;
+  const summary = personal.summary;
+
+  return {
+    metadataBase: new URL("https://samirrain.com.np"),
+    title: `${name} | ${role}`,
+    description: summary,
+    keywords: [
+      name,
+      role,
+      "Full Stack Developer Nepal",
+      "Next.js Developer",
+      "Django Developer",
+      "AI Web Developer",
+      "Software Engineer Janakpur",
+      "React Specialist",
+      `Portfolio of ${name}`,
+    ],
+    authors: [{ name: name }],
+    creator: name,
+    openGraph: {
+      title: `${name} | ${role}`,
+      description: summary,
+      url: "https://samirrain.com.np",
+      siteName: `${name} Portfolio`,
+      images: [
+        {
+          url: "/og-image.png",
+          width: 1200,
+          height: 630,
+          alt: `${name} Portfolio Overview`,
+        },
+      ],
+      locale: "en_US",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${name} | ${role}`,
+      description: summary,
+      images: ["/og-image.png"],
+      creator: "@samir_rain",
+    },
+    icons: {
+      icon: "/favicon.ico",
+    },
+  };
+}
+
+async function getPortfolioData() {
+  await dbConnect();
+  
+  const [personal, projects, experience, skills, services, education, certifications] = await Promise.all([
+    PersonalInfo.findOne().lean(),
+    Project.find().sort({ createdAt: -1 }).lean(),
+    ExperienceModel.find().sort({ order: 1, createdAt: -1 }).lean(),
+    Skill.find().sort({ order: 1 }).lean(),
+    Service.find().sort({ order: 1 }).lean(),
+    EducationModel.find().sort({ order: 1, createdAt: -1 }).lean(),
+    Certification.find().sort({ order: 1, createdAt: -1 }).lean(),
+  ]);
+
+  return {
+    personal: JSON.parse(JSON.stringify(personal)),
+    projects: JSON.parse(JSON.stringify(projects)),
+    experience: JSON.parse(JSON.stringify(experience)),
+    skills: JSON.parse(JSON.stringify(skills)),
+    services: JSON.parse(JSON.stringify(services)),
+    education: JSON.parse(JSON.stringify(education)),
+    certifications: JSON.parse(JSON.stringify(certifications)),
+  };
+}
+
+export default async function Home() {
+  const data = await getPortfolioData();
+
+  if (!data.personal) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background text-foreground p-6 text-center">
+        <div className="space-y-4">
+          <h1 className="text-4xl font-bold font-space-grotesk">Portfolio Initialization</h1>
+          <p className="text-muted-foreground">Please run the seed command to populate your database.</p>
+          <code className="block p-4 bg-muted rounded-xl text-sm">GET /api/seed</code>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <>
+      <Navbar />
+      <Hero personalInfo={data.personal} />
+      <About personalInfo={data.personal} />
+      <Skills skills={data.skills} />
+      <Experience experience={data.experience} />
+      <Projects projects={data.projects} />
+      <Services services={data.services} />
+      <Education education={data.education} />
+      <Certifications certifications={data.certifications} />
+      <Contact personalInfo={data.personal} />
+      <Footer personalInfo={data.personal} />
+    </>
   );
 }
