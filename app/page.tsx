@@ -56,7 +56,7 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: `${name} Portfolio`,
       images: [
         {
-          url: "/profile.jpeg",
+          url: "https://samirrain.com.np/profile.jpeg",
           width: 1200,
           height: 630,
           alt: `${name} Portfolio Overview`,
@@ -69,7 +69,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: `${name} | ${role}`,
       description: summary,
-      images: ["/profile.jpeg"],
+      images: ["https://samirrain.com.np/profile.jpeg"],
       creator: "@samir_rain",
     },
     icons: {

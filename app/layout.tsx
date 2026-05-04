@@ -19,9 +19,40 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://samirrain.com.np"),
+  title: {
+    default: "Samir Rain | Full Stack Developer",
+    template: "%s | Samir Rain Portfolio"
+  },
+  description: "Full Stack Developer specialized in building scalable AI-powered web applications.",
+  keywords: ["Samir Rain", "Full Stack Developer", "Next.js", "React", "AI Integration", "Nepal"],
+  authors: [{ name: "Samir Rain" }],
+  creator: "Samir Rain",
   manifest: "/manifest.json",
   verification: {
     google: "Geg6MyqELKWvjbsABit5WRiVwZ9ua-TMkbRUObCVSIA",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://samirrain.com.np",
+    siteName: "Samir Rain Portfolio",
+    title: "Samir Rain | Full Stack Developer",
+    description: "Full Stack Developer specialized in building scalable AI-powered web applications.",
+    images: [
+      {
+        url: "https://samirrain.com.np/profile.jpeg",
+        width: 1200,
+        height: 630,
+        alt: "Samir Rain Portfolio Overview",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Samir Rain | Full Stack Developer",
+    description: "Full Stack Developer specialized in building scalable AI-powered web applications.",
+    images: ["https://samirrain.com.np/profile.jpeg"],
+    creator: "@samir_rain",
   },
 };
 

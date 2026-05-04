@@ -32,7 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: personal ? `${personal.name} Portfolio` : "Portfolio",
       images: [
         {
-          url: "/profile.jpeg",
+          url: "https://samirrain.com.np/profile.jpeg",
           width: 1200,
           height: 630,
           alt: title,
@@ -45,7 +45,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title,
       description,
-      images: ["/profile.jpeg"],
+      images: ["https://samirrain.com.np/profile.jpeg"],
     },
   };
 }
