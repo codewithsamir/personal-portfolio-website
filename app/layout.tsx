@@ -18,6 +18,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://samirrain.com.np"),
   manifest: "/manifest.json",
   verification: {
     google: "Geg6MyqELKWvjbsABit5WRiVwZ9ua-TMkbRUObCVSIA",
@@ -65,8 +66,6 @@ export default function RootLayout({
               "sameAs": [
                 profiles.github,
                 profiles.linkedin,
-                profiles.facebook,
-                profiles.instagram,
                 profiles.youtube
               ],
               "knowsAbout": ["React", "Next.js", "Django", "Node.js", "TypeScript", "AI Integration"],

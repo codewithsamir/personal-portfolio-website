@@ -5,6 +5,7 @@ import { Footer } from "../_components/layout/Footer";
 import dbConnect from "@/lib/mongodb";
 import Project from "@/models/Project";
 import PersonalInfo from "@/models/PersonalInfo";
+import { Metadata } from "next";
 
 export const dynamic = 'force-dynamic';
 
@@ -12,6 +13,41 @@ async function getProjects() {
   await dbConnect();
   const projects = await Project.find({}).sort({ createdAt: -1 }).lean();
   return JSON.parse(JSON.stringify(projects));
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  await dbConnect();
+  const personal = await PersonalInfo.findOne().lean();
+  
+  const title = personal ? `${personal.name} | Projects` : "Projects | Portfolio";
+  const description = "A comprehensive gallery of my professional work, research, and technical experiments. Each project represents a unique challenge solved with modern architecture.";
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: "https://samirrain.com.np/projects",
+      siteName: personal ? `${personal.name} Portfolio` : "Portfolio",
+      images: [
+        {
+          url: "/profile.jpeg",
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+      locale: "en_US",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/profile.jpeg"],
+    },
+  };
 }
 
 export default async function AllProjectsPage() {
