@@ -1,5 +1,8 @@
 import { headers } from "next/headers";
 import { Sidebar } from "./_components/Sidebar";
+import PersonalInfo from "@/models/PersonalInfo";
+import dbConnect from "@/lib/mongodb";
+import Image from "next/image";
 
 export default async function AdminLayout({
   children,
@@ -8,6 +11,9 @@ export default async function AdminLayout({
 }) {
   const headersList = await headers();
   const isLoginPage = headersList.get("x-is-login") === "true";
+
+  await dbConnect();
+  const info = await PersonalInfo.findOne().lean();
 
   // If it's the login page, don't wrap with sidebar/header
   if (isLoginPage) {
@@ -26,7 +32,18 @@ export default async function AdminLayout({
             Admin Console
           </h2>
           <div className="flex items-center gap-4">
-             <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/20" />
+             <div className="flex items-center gap-3">
+               <span className="text-xs font-bold text-muted-foreground hidden sm:block">{(info as any)?.name || "Admin"}</span>
+               <div className="w-9 h-9 rounded-full bg-primary/10 border border-primary/20 relative overflow-hidden">
+                 {(info as any)?.profileImage ? (
+                    <Image src={(info as any).profileImage} alt="Admin" fill className="object-cover" />
+                 ) : (
+                    <div className="absolute inset-0 flex items-center justify-center text-[10px] font-black text-primary uppercase">
+                      {(info as any)?.name?.charAt(0) || "A"}
+                    </div>
+                 )}
+               </div>
+             </div>
           </div>
         </header>
         <div className="flex-1 overflow-y-auto p-8">

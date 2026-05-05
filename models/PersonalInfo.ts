@@ -12,12 +12,17 @@ export interface IPersonalInfo extends Document {
   whatsapp: string;
   location: string;
   resume: string;
+  profileImage: string;
+  footerDescription: string;
   socials: {
     github: string;
     linkedin: string;
     twitter: string;
     instagram?: string;
+    facebook?: string;
+    youtube?: string;
   };
+  footerLinks: { label: string; href: string }[];
   updatedAt: Date;
 }
 
@@ -34,12 +39,22 @@ const PersonalInfoSchema: Schema = new Schema(
     whatsapp: { type: String, required: true },
     location: { type: String, required: true },
     resume: { type: String, required: true },
+    profileImage: { type: String },
+    footerDescription: { type: String, default: "Designing and developing intentional digital experiences that bridge the gap between complexity and clarity." },
     socials: {
       github: { type: String, required: true },
       linkedin: { type: String, required: true },
       twitter: { type: String, required: true },
       instagram: { type: String },
+      facebook: { type: String },
+      youtube: { type: String },
     },
+    footerLinks: [
+      {
+        label: { type: String, required: true },
+        href: { type: String, required: true },
+      }
+    ],
   },
   { timestamps: true }
 );

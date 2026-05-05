@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Download, Send, Sparkles } from "lucide-react";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import Image from "next/image";
 
 export function Hero({ personalInfo }: { personalInfo: any }) {
   if (!personalInfo) return null;
@@ -23,17 +24,35 @@ export function Hero({ personalInfo }: { personalInfo: any }) {
 
       <div className="container px-6 relative z-10">
         <div className="max-w-5xl mx-auto text-center space-y-10">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-3 px-4 py-2 rounded-full glass border border-primary/20"
-          >
+          <div className="flex flex-col items-center gap-6">
+             <motion.div
+               initial={{ opacity: 0, scale: 0.5 }}
+               animate={{ opacity: 1, scale: 1 }}
+               transition={{ type: "spring", stiffness: 260, damping: 20 }}
+               className="relative w-28 h-28 md:w-32 md:h-32 rounded-full p-1.5 bg-linear-to-tr from-primary to-secondary shadow-2xl"
+             >
+                <div className="relative w-full h-full rounded-full overflow-hidden border-4 border-background">
+                   <Image 
+                     src={personalInfo.profileImage || "/profile.jpeg"} 
+                     alt={personalInfo.name} 
+                     fill 
+                     className="object-cover"
+                   />
+                </div>
+             </motion.div>
+
+             <motion.div
+               initial={{ opacity: 0, scale: 0.9 }}
+               animate={{ opacity: 1, scale: 1 }}
+               className="inline-flex items-center gap-3 px-4 py-2 rounded-full glass border border-primary/20"
+             >
             <div className="relative flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
               <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
             </div>
             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Available for Strategic Roles</span>
           </motion.div>
+          </div>
 
           <div className="space-y-6">
             <motion.h1

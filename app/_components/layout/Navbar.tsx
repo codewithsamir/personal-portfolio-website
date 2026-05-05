@@ -13,7 +13,6 @@ const navLinks = [
   { name: "About", href: "#about" },
   { name: "Experience", href: "#experience" },
   { name: "Services", href: "#services" },
-  { name: "Contact", href: "#contact" },
 ];
 
 export function Navbar() {
@@ -70,8 +69,8 @@ export function Navbar() {
           </ul>
           <div className="h-4 w-[1px] bg-border mx-1" />
           <ThemeToggle />
-          <Button size="sm" className="rounded-full px-5 font-bold btn-gradient border-none h-10 text-white text-[10px] uppercase tracking-widest shadow-lg whitespace-nowrap">
-            Talk to me
+          <Button asChild size="sm" className="rounded-full px-5 font-bold btn-gradient border-none h-10 text-white text-[10px] uppercase tracking-widest shadow-lg whitespace-nowrap">
+            <Link href="#contact">Talk to me</Link>
           </Button>
         </div>
 
@@ -109,8 +108,8 @@ export function Navbar() {
                 </li>
               ))}
               <li className="pt-4">
-                <Button className="w-full rounded-full font-bold py-7 text-lg btn-gradient border-none text-white">
-                  Talk to me
+                <Button asChild className="w-full rounded-full font-bold py-7 text-lg btn-gradient border-none text-white">
+                  <Link href="#contact" onClick={() => setMobileMenuOpen(false)}>Talk to me</Link>
                 </Button>
               </li>
             </ul>

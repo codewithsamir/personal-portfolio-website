@@ -9,7 +9,9 @@ import { AnimatedSection } from "../ui/AnimatedSection";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import { Mail, Send, Code2, Globe } from "lucide-react";
+import { Mail, Send, Code2, Globe, Camera, Play, MessageCircle } from "lucide-react";
+import { FaGithub, FaLinkedin, FaInstagram, FaFacebook, FaYoutube } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 import { toast } from "sonner";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -26,6 +28,15 @@ type ContactFormValues = z.infer<typeof contactSchema>;
 export function Contact({ personalInfo }: { personalInfo: any }) {
   if (!personalInfo) return null;
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const socialIcons: { [key: string]: any } = {
+    github: FaGithub,
+    linkedin: FaLinkedin,
+    twitter: FaXTwitter,
+    instagram: FaInstagram,
+    facebook: FaFacebook,
+    youtube: FaYoutube,
+  };
 
   const {
     register,
@@ -99,24 +110,24 @@ export function Contact({ personalInfo }: { personalInfo: any }) {
 
               <div className="pt-8 border-t border-border/50">
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-4">Social Presence</p>
-                <div className="flex gap-6">
-                  {[
-                    { icon: Code2, label: "GitHub", href: personalInfo.socials.github },
-                    { icon: Globe, label: "LinkedIn", href: personalInfo.socials.linkedin },
-                    { icon: Send, label: "Twitter", href: personalInfo.socials.twitter }
-                  ].map((social, i) => (
-                    <Link
-                      key={i}
-                      href={social.href}
-                      target="_blank"
-                      className="group flex flex-col items-center gap-2"
-                    >
-                      <div className="w-12 h-12 rounded-full border border-border flex items-center justify-center group-hover:bg-primary group-hover:border-primary group-hover:text-white transition-all duration-500">
-                        <social.icon size={18} />
-                      </div>
-                      <span className="text-[9px] font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">{social.label}</span>
-                    </Link>
-                  ))}
+                <div className="flex flex-wrap gap-6">
+                  {Object.entries(personalInfo.socials || {}).map(([platform, url]) => {
+                    if (!url) return null;
+                    const Icon = socialIcons[platform] || Globe;
+                    return (
+                      <Link
+                        key={platform}
+                        href={url as string}
+                        target="_blank"
+                        className="group flex flex-col items-center gap-2"
+                      >
+                        <div className="w-12 h-12 rounded-full border border-border flex items-center justify-center group-hover:bg-primary group-hover:border-primary group-hover:text-white transition-all duration-500">
+                          <Icon size={18} />
+                        </div>
+                        <span className="text-[9px] font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity capitalize">{platform}</span>
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
 

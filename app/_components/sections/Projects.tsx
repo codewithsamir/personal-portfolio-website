@@ -25,7 +25,7 @@ export function Projects({ projects }: { projects: any[] }) {
           description="A selection of my high-impact technical projects. Focused on performance, scalability, and user experience."
         />
 
-        <div className="grid md:grid-cols-2 gap-8 mt-16">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16">
           {displayProjects.map((project, idx) => (
             <ProjectCard key={project._id || idx} project={project} index={idx} />
           ))}

@@ -47,7 +47,7 @@ export function About({ personalInfo, projectsCount = 0 }: { personalInfo: any, 
                      <div className="absolute -inset-2 bg-gradient-to-tr from-primary to-secondary rounded-full blur-xl opacity-20 group-hover:opacity-40 transition-opacity" />
                      <div className="relative rounded-full overflow-hidden border-8 border-background aspect-square shadow-2xl ring-1 ring-border">
                         <Image
-                           src="/profile.jpeg"
+                           src={personalInfo.profileImage || "/profile.jpeg"}
                            alt={personalInfo.name}
                            fill
                            sizes="(max-width: 768px) 100vw, 33vw"
