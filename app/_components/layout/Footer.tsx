@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Code2, Globe, Send, Camera, Play, MessageCircle } from "lucide-react";
+import { Code2, Globe, Send, Camera, Play, MessageCircle, MapPin } from "lucide-react";
 import { FaGithub, FaLinkedin, FaInstagram, FaFacebook, FaYoutube } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 
@@ -64,8 +64,8 @@ export function Footer({ personalInfo }: { personalInfo: any }) {
               {personalInfo.email}
             </Link>
             <p className="text-xs text-muted-foreground flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-              Currently based in {personalInfo.location} 🇳🇵
+              <MapPin size={12} className="text-primary" />
+              Currently based in {personalInfo.location}
             </p>
           </div>
         </div>
@@ -86,6 +86,8 @@ export function Footer({ personalInfo }: { personalInfo: any }) {
           
           <div className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.2em] flex flex-col md:flex-row items-center gap-4">
             <span>© {currentYear} {personalInfo.name}</span>
+            <span className="hidden md:block w-1 h-1 rounded-full bg-muted-foreground/20" />
+            <Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
             <span className="hidden md:block w-1 h-1 rounded-full bg-muted-foreground/20" />
             <span>Built with Intention & precision</span>
           </div>

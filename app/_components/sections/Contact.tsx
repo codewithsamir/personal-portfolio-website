@@ -83,7 +83,7 @@ export function Contact({ personalInfo }: { personalInfo: any }) {
               <div className="space-y-6">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest">
                   <span className="w-1 h-1 rounded-full bg-primary animate-pulse" />
-                  Available for new projects
+                  {personalInfo.location ? `Available for Work in ${personalInfo.location}` : "Available for new projects"}
                 </div>
                 <h2 className="text-5xl md:text-7xl font-black font-space-grotesk tracking-tighter leading-[0.9]">
                   Let's craft <br/>
