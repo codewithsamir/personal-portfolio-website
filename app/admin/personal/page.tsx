@@ -5,7 +5,7 @@ import { Button } from "@/app/_components/ui/button";
 import { Input } from "@/app/_components/ui/input";
 import { Textarea } from "@/app/_components/ui/textarea";
 import { toast } from "sonner";
-import { Plus, Save, Trash2, Camera, Play, MessageCircle, Image as ImageIcon, Upload, Loader2, X, Code2, Globe, Send } from "lucide-react";
+import { Plus, Save, Trash2, Camera, Play, MessageCircle, Image as ImageIcon, Upload, Loader2, X, Code2, Globe, Send, FileText, ExternalLink } from "lucide-react";
 import { FaGithub, FaLinkedin, FaInstagram, FaFacebook, FaYoutube } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import Image from "next/image";
@@ -15,6 +15,7 @@ export default function PersonalInfoPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadingResume, setUploadingResume] = useState(false);
 
   useEffect(() => {
     fetch("/api/personal")
@@ -63,6 +64,35 @@ export default function PersonalInfoPage() {
       toast.error("Error uploading image");
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingResume(true);
+    const formDataUpload = new FormData();
+    formDataUpload.append("file", file);
+    formDataUpload.append("folder", "portfolio-resume");
+
+    try {
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formDataUpload,
+      });
+      const data = await res.json();
+      if (data.url) {
+        setInfo({ ...info, resume: data.url });
+        toast.success("Resume uploaded!");
+      } else {
+        toast.error("Upload failed");
+      }
+    } catch (error) {
+      toast.error("Error uploading resume");
+    } finally {
+      setUploadingResume(false);
+      e.target.value = "";
     }
   };
 
@@ -195,38 +225,83 @@ export default function PersonalInfoPage() {
             />
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-sm font-bold ml-1">Email</label>
-              <Input 
-                value={info?.email || ""} 
+              <Input
+                value={info?.email || ""}
                 onChange={(e) => setInfo({...info, email: e.target.value})}
                 className="rounded-xl"
               />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-bold ml-1">Phone</label>
-              <Input 
-                value={info?.phone || ""} 
+              <Input
+                value={info?.phone || ""}
                 onChange={(e) => setInfo({...info, phone: e.target.value})}
                 className="rounded-xl"
               />
             </div>
              <div className="space-y-2">
               <label className="text-sm font-bold ml-1">WhatsApp URL</label>
-              <Input 
-                value={info?.whatsapp || ""} 
+              <Input
+                value={info?.whatsapp || ""}
                 onChange={(e) => setInfo({...info, whatsapp: e.target.value})}
                 className="rounded-xl"
               />
             </div>
+            <div className="space-y-2">
+              <label className="text-sm font-bold ml-1">Current Location</label>
+              <Input
+                value={info?.location || ""}
+                onChange={(e) => setInfo({...info, location: e.target.value})}
+                placeholder="e.g. Dubai, UAE"
+                className="rounded-xl"
+              />
+              <p className="text-[10px] text-muted-foreground ml-1">Drives the &quot;Available for work in...&quot; badges across the site.</p>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-bold ml-1">Resume Link</label>
-            <Input 
-              value={info?.resume || ""} 
-              onChange={(e) => setInfo({...info, resume: e.target.value})}
+          <div className="space-y-3">
+            <label className="text-sm font-bold ml-1">Resume / CV</label>
+            <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center p-4 rounded-2xl bg-muted/30 border border-border">
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                  <FileText size={20} className="text-primary" />
+                </div>
+                <div className="min-w-0">
+                  {info?.resume ? (
+                    <a
+                      href={info.resume}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm font-bold hover:text-primary transition-colors flex items-center gap-1.5 truncate"
+                    >
+                      View current resume
+                      <ExternalLink size={12} className="shrink-0" />
+                    </a>
+                  ) : (
+                    <span className="text-sm text-muted-foreground italic">No resume uploaded yet</span>
+                  )}
+                  <p className="text-[10px] text-muted-foreground truncate mt-0.5">{info?.resume || "Upload a PDF to enable the CV download button"}</p>
+                </div>
+              </div>
+              <label className="cursor-pointer shrink-0">
+                <span className="px-4 py-2.5 bg-primary text-white text-xs font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-2 whitespace-nowrap">
+                  {uploadingResume ? (
+                    <Loader2 size={14} className="animate-spin" />
+                  ) : (
+                    <Upload size={14} />
+                  )}
+                  {info?.resume ? "Replace File" : "Upload PDF"}
+                </span>
+                <input type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={handleResumeUpload} disabled={uploadingResume} />
+              </label>
+            </div>
+            <Input
+              value={info?.resume || ""}
+              onChange={(e) => setInfo({ ...info, resume: e.target.value })}
+              placeholder="Or paste a direct link to your resume"
               className="rounded-xl"
             />
           </div>

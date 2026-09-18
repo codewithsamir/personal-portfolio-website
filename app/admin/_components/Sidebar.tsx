@@ -12,7 +12,8 @@ import {
   GraduationCap,
   Sparkles,
   User,
-  Award
+  Award,
+  Newspaper
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LogoutButton } from "./LogoutButton";
@@ -22,6 +23,7 @@ const sidebarLinks = [
   { name: "Personal Info", href: "/admin/personal", icon: User },
   { name: "Experience", href: "/admin/experience", icon: Briefcase },
   { name: "Projects", href: "/admin/projects", icon: FolderOpen },
+  { name: "Blog", href: "/admin/blog", icon: Newspaper },
   { name: "Skills", href: "/admin/skills", icon: Wrench },
   { name: "Services", href: "/admin/services", icon: Sparkles },
   { name: "Education", href: "/admin/education", icon: GraduationCap },

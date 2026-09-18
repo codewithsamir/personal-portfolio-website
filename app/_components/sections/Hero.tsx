@@ -36,7 +36,9 @@ export function Hero({ personalInfo }: { personalInfo: any }) {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
               </div>
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Available for Strategic Roles</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">
+                {personalInfo.location ? `Available for Work in ${personalInfo.location}` : "Available for Strategic Roles"}
+              </span>
             </motion.div>
           </div>
 

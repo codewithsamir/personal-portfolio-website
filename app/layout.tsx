@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { Outfit, Space_Grotesk } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { ThemeProvider } from "@/app/_components/theme-provider";
 import { ThemeInjector } from "@/app/_components/ThemeInjector";
 import { Toaster } from "sonner";
+
+const adsenseClientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -73,6 +76,19 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <ThemeInjector />
+
+        {/* Google AdSense — only loads once NEXT_PUBLIC_ADSENSE_CLIENT_ID is set (after approval) */}
+        {adsenseClientId && (
+          <>
+            <meta name="google-adsense-account" content={adsenseClientId} />
+            <Script
+              async
+              src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseClientId}`}
+              crossOrigin="anonymous"
+              strategy="afterInteractive"
+            />
+          </>
+        )}
 
         {/* Alternate portfolio sites */}
         {profiles.portfolio.map((url) => (

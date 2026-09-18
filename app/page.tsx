@@ -5,6 +5,7 @@ import { About } from "@/app/_components/sections/About";
 import { Skills } from "@/app/_components/sections/Skills";
 import { Experience } from "@/app/_components/sections/Experience";
 import { Projects } from "@/app/_components/sections/Projects";
+import { Blog } from "@/app/_components/sections/Blog";
 import { Services } from "@/app/_components/sections/Services";
 import { Education } from "@/app/_components/sections/Education";
 import { Certifications } from "@/app/_components/sections/Certifications";
@@ -17,6 +18,7 @@ import Skill from "@/models/Skill";
 import Service from "@/models/Service";
 import EducationModel from "@/models/Education";
 import Certification from "@/models/Certification";
+import BlogModel from "@/models/Blog";
 
 import { Metadata } from "next";
 
@@ -81,7 +83,7 @@ export async function generateMetadata(): Promise<Metadata> {
 async function getPortfolioData() {
   await dbConnect();
   
-  const [personal, projects, experience, skills, services, education, certifications] = await Promise.all([
+  const [personal, projects, experience, skills, services, education, certifications, posts] = await Promise.all([
     PersonalInfo.findOne().lean(),
     Project.find().sort({ createdAt: -1 }).lean(),
     ExperienceModel.find().sort({ order: 1, createdAt: -1 }).lean(),
@@ -89,6 +91,7 @@ async function getPortfolioData() {
     Service.find().sort({ order: 1 }).lean(),
     EducationModel.find().sort({ order: 1, createdAt: -1 }).lean(),
     Certification.find().sort({ order: 1, createdAt: -1 }).lean(),
+    BlogModel.find({ published: true }).sort({ publishedAt: -1, createdAt: -1 }).lean(),
   ]);
 
   return {
@@ -99,6 +102,7 @@ async function getPortfolioData() {
     services: JSON.parse(JSON.stringify(services)),
     education: JSON.parse(JSON.stringify(education)),
     certifications: JSON.parse(JSON.stringify(certifications)),
+    posts: JSON.parse(JSON.stringify(posts)),
   };
 }
 
@@ -125,6 +129,7 @@ export default async function Home() {
       <Skills skills={data.skills} />
       <Experience experience={data.experience} />
       <Projects projects={data.projects} />
+      <Blog posts={data.posts} />
       <Services services={data.services} />
       <Education education={data.education} />
       <Certifications certifications={data.certifications} />

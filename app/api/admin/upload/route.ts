@@ -11,6 +11,7 @@ export async function POST(req: NextRequest) {
   try {
     const data = await req.formData();
     const file = data.get("file") as File;
+    const folder = (data.get("folder") as string) || "portfolio-projects";
 
     if (!file) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
@@ -19,10 +20,11 @@ export async function POST(req: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Upload to Cloudinary using a promise to handle the stream
+    // resource_type "auto" lets Cloudinary handle images as well as
+    // non-image files like resume PDFs.
     const uploadResponse: any = await new Promise((resolve, reject) => {
       cloudinary.uploader.upload_stream(
-        { folder: "portfolio-projects" },
+        { folder, resource_type: "auto" },
         (error, result) => {
           if (error) reject(error);
           else resolve(result);
@@ -30,7 +32,7 @@ export async function POST(req: NextRequest) {
       ).end(buffer);
     });
 
-    return NextResponse.json({ url: uploadResponse.secure_url });
+    return NextResponse.json({ url: uploadResponse.secure_url, name: file.name });
   } catch (error: any) {
     console.error("Upload error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });

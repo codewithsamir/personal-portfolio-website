@@ -1,5 +1,6 @@
 import { SectionHeader } from "../_components/ui/SectionHeader";
 import { ProjectCard } from "../_components/ui/ProjectCard";
+import { Breadcrumb } from "../_components/ui/Breadcrumb";
 import { Navbar } from "../_components/layout/Navbar";
 import { Footer } from "../_components/layout/Footer";
 import dbConnect from "@/lib/mongodb";
@@ -61,6 +62,8 @@ export default async function AllProjectsPage() {
       <Navbar />
       <main className="flex-1 py-32 px-6">
         <div className="max-w-7xl mx-auto">
+          <Breadcrumb items={[{ label: "Projects" }]} />
+
           <SectionHeader
             title="All Technical Projects"
             subtitle="My Portfolio"
