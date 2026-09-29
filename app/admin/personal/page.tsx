@@ -136,18 +136,18 @@ export default function PersonalInfoPage() {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="space-y-8 pb-20">
+    <div className="space-y-6 sm:space-y-8 pb-20">
       <div>
-        <h1 className="text-3xl font-bold font-space-grotesk">Personal Info</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold font-space-grotesk">Personal Info</h1>
         <p className="text-muted-foreground mt-1">Manage your identity and branding.</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-10">
+      <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-10">
         {/* Core Identity */}
-        <div className="p-8 rounded-[2rem] bg-background border border-border space-y-8 shadow-sm">
+        <div className="p-5 sm:p-8 rounded-3xl sm:rounded-[2rem] bg-background border border-border space-y-8 shadow-sm">
           <h2 className="text-xl font-bold font-space-grotesk border-b border-border pb-4">Core Identity</h2>
           
-          <div className="flex flex-col md:flex-row gap-10">
+          <div className="flex flex-col md:flex-row gap-6 md:gap-10">
             {/* Profile Image Column */}
             <div className="md:w-1/3 space-y-4">
               <label className="text-sm font-bold ml-1 uppercase tracking-widest text-muted-foreground">Profile Image</label>
@@ -203,6 +203,39 @@ export default function PersonalInfoPage() {
                   />
                 </div>
               </div>
+
+              <div className="grid sm:grid-cols-3 gap-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-bold ml-1">Role</label>
+                  <Input
+                    value={info?.role || ""}
+                    onChange={(e) => setInfo({...info, role: e.target.value})}
+                    placeholder="e.g. Full Stack Developer"
+                    className="rounded-xl"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-bold ml-1">Years of Experience</label>
+                  <Input
+                    value={info?.yearsOfExperience || ""}
+                    onChange={(e) => setInfo({...info, yearsOfExperience: e.target.value})}
+                    placeholder="e.g. 3+"
+                    className="rounded-xl"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-bold ml-1">Developers Mentored</label>
+                  <Input
+                    value={info?.learnerCount || ""}
+                    onChange={(e) => setInfo({...info, learnerCount: e.target.value})}
+                    placeholder="e.g. 50,000+"
+                    className="rounded-xl"
+                  />
+                </div>
+              </div>
+              <p className="text-[10px] text-muted-foreground ml-1 -mt-4">
+                Shown on the home page: &quot;A <b>Role</b> with <b>3+</b> years of experience. Mentor to <b>50,000+</b> developers.&quot; Leave a field empty to hide that part.
+              </p>
 
               <div className="space-y-2">
                 <label className="text-sm font-bold ml-1">Bio Summary</label>
@@ -308,7 +341,7 @@ export default function PersonalInfoPage() {
         </div>
 
         {/* Social Presence */}
-        <div className="p-8 rounded-[2rem] bg-background border border-border space-y-6 shadow-sm">
+        <div className="p-5 sm:p-8 rounded-3xl sm:rounded-[2rem] bg-background border border-border space-y-6 shadow-sm">
           <h2 className="text-xl font-bold font-space-grotesk border-b border-border pb-4">Social Presence</h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-2">
@@ -363,7 +396,7 @@ export default function PersonalInfoPage() {
         </div>
 
         {/* Custom Footer Links */}
-        <div className="p-8 rounded-[2rem] bg-background border border-border space-y-6 shadow-sm">
+        <div className="p-5 sm:p-8 rounded-3xl sm:rounded-[2rem] bg-background border border-border space-y-6 shadow-sm">
           <div className="flex justify-between items-center border-b border-border pb-4">
             <h2 className="text-xl font-bold font-space-grotesk">Navigation Links</h2>
             <Button type="button" variant="outline" size="sm" onClick={addFooterLink} className="rounded-full">
@@ -412,8 +445,8 @@ export default function PersonalInfoPage() {
           </div>
         </div>
 
-        <div className="flex justify-end sticky bottom-8 z-50">
-          <Button type="submit" disabled={saving} className="rounded-2xl px-12 h-16 font-bold group shadow-2xl btn-gradient border-none text-white">
+        <div className="flex justify-end sticky bottom-4 sm:bottom-8 z-10">
+          <Button type="submit" disabled={saving} className="w-full sm:w-auto rounded-2xl px-8 sm:px-12 h-14 sm:h-16 font-bold group shadow-2xl btn-gradient border-none text-white">
             {saving ? "Saving Changes..." : "Apply All Updates"}
             <Save size={20} className="ml-3 group-hover:scale-110 transition-transform" />
           </Button>

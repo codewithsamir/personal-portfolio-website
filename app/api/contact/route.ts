@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (error: any) {
-    console.error("Contact API Error:", error);
+    // console.error("Contact API Error:", error);
     return NextResponse.json(
       { error: "Failed to submit contact form" },
       { status: 500 }

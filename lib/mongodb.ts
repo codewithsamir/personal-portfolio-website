@@ -9,7 +9,7 @@ if (!MONGODB_URI) {
 }
 
 // Securely log the connection attempt (masked)
-console.log('🔌 Attempting MongoDB connection to:', MONGODB_URI.replace(/:([^@]+)@/, ':****@'));
+// console.log('🔌 Attempting MongoDB connection to:', MONGODB_URI.replace(/:([^@]+)@/, ':****@'));
 
 /**
  * Global is used here to maintain a cached connection across hot reloads

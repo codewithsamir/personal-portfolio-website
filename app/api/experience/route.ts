@@ -21,11 +21,11 @@ export async function POST(req: NextRequest) {
   try {
     await dbConnect();
     const body = await req.json();
-    console.log("📝 Creating experience:", body);
+    // console.log("📝 Creating experience:", body);
     const experience = await ExperienceModel.create(body);
     return NextResponse.json(experience);
   } catch (error: any) {
-    console.error("POST Error:", error);
+    // console.error("POST Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
@@ -34,7 +34,7 @@ export async function PUT(req: NextRequest) {
   try {
     await dbConnect();
     const { id, ...body } = await req.json();
-    console.log(`🔄 Updating experience ${id}:`, body);
+    // console.log(`🔄 Updating experience ${id}:`, body);
     
     if (!id) {
         return NextResponse.json({ error: "Missing ID" }, { status: 400 });
@@ -49,10 +49,10 @@ export async function PUT(req: NextRequest) {
         return NextResponse.json({ error: "Experience not found" }, { status: 404 });
     }
 
-    console.log("✅ Updated successfully:", experience);
+    // console.log("✅ Updated successfully:", experience);
     return NextResponse.json(experience);
   } catch (error: any) {
-    console.error("PUT Error:", error);
+    // console.error("PUT Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

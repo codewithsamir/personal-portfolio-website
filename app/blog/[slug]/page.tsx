@@ -11,6 +11,9 @@ import Image from "next/image";
 import { Calendar, Clock, Eye } from "lucide-react";
 import { Breadcrumb } from "@/app/_components/ui/Breadcrumb";
 import { format } from "date-fns";
+import { parseBlogTitle } from "@/lib/blog";
+import { recordUniqueView } from "@/lib/blogViews";
+import { headers } from "next/headers";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +21,12 @@ async function getPost(slug: string) {
   await dbConnect();
   const post = await Blog.findOne({ slug, published: true }).lean();
   if (!post) return null;
-  return JSON.parse(JSON.stringify(post));
+  const data = JSON.parse(JSON.stringify(post));
+  const parsed = parseBlogTitle(data.title);
+  data.title = parsed.title;
+  if (!data.excerpt && parsed.description) data.excerpt = parsed.description;
+  if (!data.tags?.length && parsed.tags) data.tags = parsed.tags;
+  return data;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -52,8 +60,9 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
   if (!post) notFound();
 
-  // Fire-and-forget view increment; doesn't block the render.
-  Blog.findOneAndUpdate({ slug, published: true }, { $inc: { views: 1 } }).catch(() => {});
+  // Count each visitor once per post, however many times they open it
+  const counted = await recordUniqueView(post._id, await headers());
+  const views = (post.views ?? 0) + (counted ? 1 : 0);
 
   await dbConnect();
   const personalData = await PersonalInfo.findOne().lean();
@@ -80,7 +89,10 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             ))}
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-black font-space-grotesk tracking-tighter leading-[0.95] mb-8">
+          <h1
+            title={post.title}
+            className="text-3xl sm:text-4xl md:text-5xl font-black font-space-grotesk tracking-tighter leading-[1.1] pb-1 mb-8 line-clamp-2 wrap-break-word"
+          >
             {post.title}
           </h1>
 
@@ -97,7 +109,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             )}
             <span className="flex items-center gap-2">
               <Eye size={14} />
-              {(post.views ?? 0) + 1} views
+              {views} {views === 1 ? "view" : "views"}
             </span>
             {post.author && <span>By {post.author}</span>}
           </div>

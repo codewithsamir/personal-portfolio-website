@@ -14,7 +14,7 @@ export async function sendMail({
   const { GMAIL_USER, GMAIL_PASS } = process.env;
 
   if (!GMAIL_USER || !GMAIL_PASS) {
-    console.warn("📧 GMAIL_USER or GMAIL_PASS not found in environment variables. Skipping email sending.");
+    // console.warn("📧 GMAIL_USER or GMAIL_PASS not found in environment variables. Skipping email sending.");
     return;
   }
 
@@ -28,9 +28,9 @@ export async function sendMail({
 
   try {
     const testResult = await transport.verify();
-    console.log("📧 Mail transport verified:", testResult);
+    // console.log("📧 Mail transport verified:", testResult);
   } catch (error) {
-    console.error("📧 Mail transport error:", error);
+    // console.error("📧 Mail transport error:", error);
     return;
   }
 
@@ -53,9 +53,9 @@ export async function sendMail({
         </div>
       `,
     });
-    console.log("📧 Email sent successfully:", sendResult.messageId);
+    // console.log("📧 Email sent successfully:", sendResult.messageId);
     return sendResult;
   } catch (error) {
-    console.error("📧 Error sending email:", error);
+    // console.error("📧 Error sending email:", error);
   }
 }

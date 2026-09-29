@@ -34,12 +34,12 @@ export async function POST(req: NextRequest) {
   try {
     await dbConnect();
     const body = await req.json();
-    console.log('📝 POST Body:', JSON.stringify(body, null, 2));
+    // console.log('📝 POST Body:', JSON.stringify(body, null, 2));
     const project = await ProjectModel.create(body);
-    console.log('✅ POST Result:', JSON.stringify(project, null, 2));
+    // console.log('✅ POST Result:', JSON.stringify(project, null, 2));
     return NextResponse.json(project);
   } catch (error: any) {
-    console.error('❌ POST Error:', error);
+    // console.error('❌ POST Error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
@@ -49,16 +49,16 @@ export async function PUT(req: NextRequest) {
     await dbConnect();
     const bodyData = await req.json();
     const { id, ...body } = bodyData;
-    console.log(`🔄 PUT Body for ${id}:`, JSON.stringify(body, null, 2));
+    // console.log(`🔄 PUT Body for ${id}:`, JSON.stringify(body, null, 2));
     
     const project = await ProjectModel.findByIdAndUpdate(id, body, { 
         returnDocument: "after",
         runValidators: true 
     });
-    console.log('✅ PUT Result:', JSON.stringify(project, null, 2));
+    // console.log('✅ PUT Result:', JSON.stringify(project, null, 2));
     return NextResponse.json(project);
   } catch (error: any) {
-    console.error('❌ PUT Error:', error);
+    // console.error('❌ PUT Error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
@@ -84,18 +84,18 @@ export async function DELETE(req: NextRequest) {
         if (uploadIndex !== -1) {
           const publicIdWithExt = parts.slice(uploadIndex + 2).join("/"); // Skip 'upload' and 'version'
           const publicId = publicIdWithExt.split(".")[0];
-          console.log(`🗑️ Deleting Cloudinary asset: ${publicId}`);
+          // console.log(`🗑️ Deleting Cloudinary asset: ${publicId}`);
           await cloudinary.uploader.destroy(publicId);
         }
       } catch (cloudinaryError) {
-        console.error("Cloudinary delete error:", cloudinaryError);
+        // console.error("Cloudinary delete error:", cloudinaryError);
       }
     }
 
     await ProjectModel.findByIdAndDelete(id);
     return NextResponse.json({ message: "Deleted successfully" });
   } catch (error: any) {
-    console.error("DELETE Error:", error);
+    // console.error("DELETE Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

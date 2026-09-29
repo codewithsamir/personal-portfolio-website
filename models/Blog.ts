@@ -4,7 +4,7 @@ const BlogSchema = new Schema(
   {
     title: { type: String, required: true },
     slug: { type: String, unique: true, required: true },
-    excerpt: { type: String, required: true },
+    excerpt: { type: String, default: "" },
     content: { type: String, required: true },
     coverImage: { type: String },
     tags: [{ type: String }],

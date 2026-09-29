@@ -20,6 +20,8 @@ import {
 } from "lucide-react";
 import { DataTable, DataTableRow, DataTableCell } from "../_components/DataTable";
 import Image from "next/image";
+import { cleanBlogTitle, parseBlogTitle } from "@/lib/blog";
+import { useConfirm } from "../_components/ConfirmDialog";
 
 const emptyForm = {
   title: "",
@@ -33,6 +35,7 @@ const emptyForm = {
 };
 
 export default function BlogAdminPage() {
+  const confirm = useConfirm();
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
@@ -55,7 +58,7 @@ export default function BlogAdminPage() {
     setEditingId(post._id);
     setFormData({
       title: post.title,
-      excerpt: post.excerpt,
+      excerpt: post.excerpt || "",
       content: post.content,
       tags: (post.tags || []).join(", "),
       coverImage: post.coverImage || "",
@@ -96,10 +99,28 @@ export default function BlogAdminPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Pull any "Slug: / Tags: / Meta description:" text pasted into the title into its own field
+    const parsed = parseBlogTitle(formData.title);
+    const typedTags = formData.tags.split(",").map((t) => t.trim()).filter(Boolean);
+
+    // Excerpt is optional: fall back to the pasted description, then the start of the content
+    const plainContent = formData.content
+      .replace(/<[^>]*>/g, " ")
+      .replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1")
+      .replace(/[#*_`>~-]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    const excerpt =
+      formData.excerpt.trim() ||
+      parsed.description ||
+      (plainContent.length > 160 ? plainContent.slice(0, 157).trimEnd() + "..." : plainContent);
+
     const postToSubmit = {
       ...formData,
-      tags: formData.tags.split(",").map((t) => t.trim()).filter(Boolean),
-      slug: formData.title
+      title: parsed.title,
+      excerpt,
+      tags: typedTags.length ? typedTags : parsed.tags || [],
+      slug: (parsed.slug || parsed.title)
         .toLowerCase()
         .trim()
         .replace(/[^a-z0-9\s-]/g, "")
@@ -128,7 +149,7 @@ export default function BlogAdminPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this post?")) return;
+    if (!(await confirm({ title: "Delete this post?", description: "This will be permanently removed and cannot be undone." }))) return;
     const res = await fetch(`/api/blogs?id=${id}`, { method: "DELETE" });
     if (res.ok) {
       toast.success("Post deleted");
@@ -151,10 +172,10 @@ export default function BlogAdminPage() {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-center">
+    <div className="space-y-6 sm:space-y-8">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold font-space-grotesk">Blog</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold font-space-grotesk">Blog</h1>
           <p className="text-muted-foreground mt-1">Write and publish articles to your site.</p>
         </div>
         {!isAdding && (
@@ -166,33 +187,33 @@ export default function BlogAdminPage() {
       </div>
 
       {!isAdding && posts.length > 0 && (
-        <div className="grid grid-cols-3 gap-4">
-          <div className="p-6 rounded-[1.5rem] bg-background border border-border">
-            <p className="text-3xl font-black font-space-grotesk text-primary">{posts.length}</p>
-            <p className="text-xs font-black text-muted-foreground uppercase tracking-widest mt-1">Total Posts</p>
+        <div className="grid grid-cols-3 gap-2 sm:gap-4">
+          <div className="p-3 sm:p-6 rounded-2xl sm:rounded-[1.5rem] bg-background border border-border min-w-0">
+            <p className="text-xl sm:text-3xl font-black font-space-grotesk text-primary">{posts.length}</p>
+            <p className="text-[9px] sm:text-xs font-black text-muted-foreground uppercase tracking-wider sm:tracking-widest mt-1 truncate">Total Posts</p>
           </div>
-          <div className="p-6 rounded-[1.5rem] bg-background border border-border">
-            <p className="text-3xl font-black font-space-grotesk text-primary">{posts.filter((p) => p.published).length}</p>
-            <p className="text-xs font-black text-muted-foreground uppercase tracking-widest mt-1">Published</p>
+          <div className="p-3 sm:p-6 rounded-2xl sm:rounded-[1.5rem] bg-background border border-border min-w-0">
+            <p className="text-xl sm:text-3xl font-black font-space-grotesk text-primary">{posts.filter((p) => p.published).length}</p>
+            <p className="text-[9px] sm:text-xs font-black text-muted-foreground uppercase tracking-wider sm:tracking-widest mt-1 truncate">Published</p>
           </div>
-          <div className="p-6 rounded-[1.5rem] bg-background border border-border">
-            <p className="text-3xl font-black font-space-grotesk text-primary flex items-center gap-2">
-              <BarChart3 size={22} />
+          <div className="p-3 sm:p-6 rounded-2xl sm:rounded-[1.5rem] bg-background border border-border min-w-0">
+            <p className="text-xl sm:text-3xl font-black font-space-grotesk text-primary flex items-center gap-2">
+              <BarChart3 className="w-4 h-4 sm:w-[22px] sm:h-[22px]" />
               {posts.reduce((sum, p) => sum + (p.views || 0), 0)}
             </p>
-            <p className="text-xs font-black text-muted-foreground uppercase tracking-widest mt-1">Total Views</p>
+            <p className="text-[9px] sm:text-xs font-black text-muted-foreground uppercase tracking-wider sm:tracking-widest mt-1 truncate">Total Views</p>
           </div>
         </div>
       )}
 
       {isAdding && (
-        <form onSubmit={handleSubmit} className="p-10 rounded-[2.5rem] bg-background border border-border space-y-8 shadow-2xl animate-in fade-in slide-in-from-top-4">
+        <form onSubmit={handleSubmit} className="p-5 sm:p-10 rounded-3xl sm:rounded-[2.5rem] bg-background border border-border space-y-8 shadow-2xl animate-in fade-in slide-in-from-top-4">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold">{editingId ? "Edit Post" : "New Post"}</h2>
             <button type="button" onClick={() => { setIsAdding(false); setEditingId(null); setFormData(emptyForm); }} className="text-muted-foreground hover:text-foreground"><X size={20}/></button>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-10">
+          <div className="grid lg:grid-cols-3 gap-6 lg:gap-10">
             <div className="lg:col-span-1 space-y-6">
               <div className="space-y-4">
                 <label className="text-sm font-bold ml-1 uppercase tracking-widest text-muted-foreground">Cover Image</label>
@@ -286,13 +307,14 @@ export default function BlogAdminPage() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-bold ml-1">Excerpt</label>
+                <label className="text-sm font-bold ml-1">
+                  Excerpt <span className="text-xs font-medium text-muted-foreground">(optional)</span>
+                </label>
                 <Textarea
                   value={formData.excerpt}
                   onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                  placeholder="A short summary shown on the blog listing card..."
+                  placeholder="A short summary shown on the blog listing card. Leave empty to use the start of the content."
                   className="rounded-2xl min-h-[80px] p-4"
-                  required
                 />
               </div>
               <div className="space-y-2">
@@ -329,15 +351,15 @@ export default function BlogAdminPage() {
             <DataTableRow key={post._id}>
               <DataTableCell>
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-10 rounded-lg bg-muted border border-border relative overflow-hidden flex items-center justify-center">
+                  <div className="w-16 h-10 shrink-0 rounded-lg bg-muted border border-border relative overflow-hidden flex items-center justify-center">
                     {post.coverImage ? (
                       <Image src={post.coverImage} alt={post.title} fill className="object-cover" />
                     ) : (
                       <ImageIcon size={14} className="text-muted-foreground/30" />
                     )}
                   </div>
-                  <div>
-                    <p className="font-bold font-space-grotesk text-md leading-none">{post.title}</p>
+                  <div className="min-w-0 max-w-65 sm:max-w-sm">
+                    <p title={cleanBlogTitle(post.title)} className="font-bold font-space-grotesk text-md leading-snug line-clamp-2 wrap-break-word">{cleanBlogTitle(post.title)}</p>
                     <p className="text-[10px] text-muted-foreground mt-1.5 truncate max-w-[200px]">{post.excerpt}</p>
                   </div>
                 </div>
