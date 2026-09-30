@@ -5,8 +5,10 @@ import { Button } from "@/app/_components/ui/button";
 import { Input } from "@/app/_components/ui/input";
 import { toast } from "sonner";
 import { Plus, Trash2, Wrench, ChevronRight, Edit3, X } from "lucide-react";
+import { useConfirm } from "../_components/ConfirmDialog";
 
 export default function SkillsAdminPage() {
+  const confirm = useConfirm();
   const [skills, setSkills] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
@@ -75,7 +77,7 @@ export default function SkillsAdminPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this category?")) return;
+    if (!(await confirm({ title: "Delete this category?", description: "This will be permanently removed and cannot be undone." }))) return;
     const res = await fetch(`/api/skills?id=${id}`, { method: "DELETE" });
     if (res.ok) {
       toast.success("Category deleted");
@@ -86,10 +88,10 @@ export default function SkillsAdminPage() {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-center">
+    <div className="space-y-6 sm:space-y-8">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold font-space-grotesk">Skills</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold font-space-grotesk">Skills</h1>
           <p className="text-muted-foreground mt-1">Manage your technical expertise.</p>
         </div>
         {!isAdding && (
@@ -101,7 +103,7 @@ export default function SkillsAdminPage() {
       </div>
 
       {isAdding && (
-        <form onSubmit={handleSubmit} className="p-8 rounded-[2rem] bg-background border border-border space-y-6 shadow-xl animate-in fade-in slide-in-from-top-4">
+        <form onSubmit={handleSubmit} className="p-5 sm:p-8 rounded-3xl sm:rounded-[2rem] bg-background border border-border space-y-6 shadow-xl animate-in fade-in slide-in-from-top-4">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold">{editingId ? "Edit Category" : "New Category"}</h2>
             <button type="button" onClick={() => { setIsAdding(false); setEditingId(null); }} className="text-muted-foreground hover:text-foreground"><X size={20}/></button>
@@ -162,7 +164,7 @@ export default function SkillsAdminPage() {
 
       <div className="grid md:grid-cols-2 gap-6">
         {skills.map((cat) => (
-          <div key={cat._id} className="p-8 rounded-[2rem] bg-background border border-border space-y-6 hover:border-primary/30 transition-all hover:shadow-lg relative group">
+          <div key={cat._id} className="p-5 sm:p-8 rounded-3xl sm:rounded-[2rem] bg-background border border-border space-y-6 hover:border-primary/30 transition-all hover:shadow-lg relative group">
             <div className="flex justify-between items-start">
               <div className="flex items-center gap-3 text-primary font-bold">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">

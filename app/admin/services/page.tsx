@@ -6,6 +6,7 @@ import { Input } from "@/app/_components/ui/input";
 import { Textarea } from "@/app/_components/ui/textarea";
 import { toast } from "sonner";
 import { Plus, Trash2, Sparkles, Code, Layout, Link as LinkIcon, Smartphone, Database } from "lucide-react";
+import { useConfirm } from "../_components/ConfirmDialog";
 
 const availableIcons = [
   { name: "Code", icon: Code },
@@ -16,6 +17,7 @@ const availableIcons = [
 ];
 
 export default function ServicesAdminPage() {
+  const confirm = useConfirm();
   const [services, setServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
@@ -53,7 +55,7 @@ export default function ServicesAdminPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this service?")) return;
+    if (!(await confirm({ title: "Delete this service?", description: "This will be permanently removed and cannot be undone." }))) return;
     const res = await fetch(`/api/services?id=${id}`, { method: "DELETE" });
     if (res.ok) {
       toast.success("Service deleted");
@@ -64,10 +66,10 @@ export default function ServicesAdminPage() {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-center">
+    <div className="space-y-6 sm:space-y-8">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold font-space-grotesk">Services</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold font-space-grotesk">Services</h1>
           <p className="text-muted-foreground mt-1">Define what you offer to clients.</p>
         </div>
         <Button onClick={() => setIsAdding(!isAdding)} className="rounded-xl font-bold">
@@ -77,7 +79,7 @@ export default function ServicesAdminPage() {
       </div>
 
       {isAdding && (
-        <form onSubmit={handleAddService} className="p-8 rounded-[2rem] bg-background border border-border space-y-6 shadow-xl animate-in fade-in slide-in-from-top-4">
+        <form onSubmit={handleAddService} className="p-5 sm:p-8 rounded-3xl sm:rounded-[2rem] bg-background border border-border space-y-6 shadow-xl animate-in fade-in slide-in-from-top-4">
           <div className="space-y-2">
             <label className="text-sm font-bold">Service Title</label>
             <Input 
@@ -127,7 +129,7 @@ export default function ServicesAdminPage() {
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {services.map((service) => (
-          <div key={service._id} className="p-8 rounded-[2.5rem] bg-background border border-border hover:border-primary/30 transition-all group flex flex-col items-start gap-6">
+          <div key={service._id} className="p-5 sm:p-8 rounded-3xl sm:rounded-[2.5rem] bg-background border border-border hover:border-primary/30 transition-all group flex flex-col items-start gap-6">
             <div className="flex justify-between w-full items-start">
                <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
                  <Sparkles size={24} />

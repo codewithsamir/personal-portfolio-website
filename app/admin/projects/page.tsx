@@ -21,8 +21,10 @@ import {
 import { DataTable, DataTableRow, DataTableCell } from "../_components/DataTable";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { useConfirm } from "../_components/ConfirmDialog";
 
 export default function ProjectsAdminPage() {
+  const confirm = useConfirm();
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
@@ -117,7 +119,7 @@ export default function ProjectsAdminPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this project?")) return;
+    if (!(await confirm({ title: "Delete this project?", description: "This will be permanently removed and cannot be undone." }))) return;
     const res = await fetch(`/api/projects?id=${id}`, { method: "DELETE" });
     if (res.ok) {
       toast.success("Project deleted");
@@ -128,10 +130,10 @@ export default function ProjectsAdminPage() {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-center">
+    <div className="space-y-6 sm:space-y-8">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold font-space-grotesk">Projects</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold font-space-grotesk">Projects</h1>
           <p className="text-muted-foreground mt-1">Showcase your best technical achievements.</p>
         </div>
         {!isAdding && (
@@ -143,13 +145,13 @@ export default function ProjectsAdminPage() {
       </div>
 
       {isAdding && (
-        <form onSubmit={handleSubmit} className="p-10 rounded-[2.5rem] bg-background border border-border space-y-8 shadow-2xl animate-in fade-in slide-in-from-top-4">
+        <form onSubmit={handleSubmit} className="p-5 sm:p-10 rounded-3xl sm:rounded-[2.5rem] bg-background border border-border space-y-8 shadow-2xl animate-in fade-in slide-in-from-top-4">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold">{editingId ? "Edit Project" : "New Project"}</h2>
             <button type="button" onClick={() => { setIsAdding(false); setEditingId(null); }} className="text-muted-foreground hover:text-foreground"><X size={20}/></button>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-10">
+          <div className="grid lg:grid-cols-3 gap-6 lg:gap-10">
             <div className="lg:col-span-1 space-y-6">
                <div className="space-y-4">
                  <label className="text-sm font-bold ml-1 uppercase tracking-widest text-muted-foreground">Project Image</label>

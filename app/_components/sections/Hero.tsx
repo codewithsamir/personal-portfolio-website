@@ -62,8 +62,18 @@ export function Hero({ personalInfo }: { personalInfo: any }) {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="text-xl md:text-3xl text-muted-foreground font-medium tracking-tight leading-relaxed max-w-3xl mx-auto"
             >
-              A <span className="text-foreground font-black underline decoration-primary/30 decoration-4 underline-offset-8">{personalInfo.role}</span> with {personalInfo.yearsOfExperience} years of experience.
-              Mentor to <span className="text-primary font-bold">{personalInfo.learnerCount} developers</span>.
+              {personalInfo.role && (
+                <>
+                  A <span className="text-foreground font-black underline decoration-primary/30 decoration-4 underline-offset-8">{personalInfo.role}</span>
+                  {personalInfo.yearsOfExperience ? ` with ${personalInfo.yearsOfExperience} years of experience.` : "."}{" "}
+                </>
+              )}
+              {!personalInfo.role && personalInfo.yearsOfExperience && (
+                <>{personalInfo.yearsOfExperience} years of experience.{" "}</>
+              )}
+              {personalInfo.learnerCount && (
+                <>Mentor to <span className="text-primary font-bold">{personalInfo.learnerCount} developers</span>.</>
+              )}
             </motion.p>
           </div>
 

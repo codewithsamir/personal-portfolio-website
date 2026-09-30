@@ -7,8 +7,10 @@ import { Textarea } from "@/app/_components/ui/textarea";
 import { toast } from "sonner";
 import { Plus, Trash2, Briefcase, MapPin, Calendar, Edit3, X, Save } from "lucide-react";
 import { DataTable, DataTableRow, DataTableCell } from "../_components/DataTable";
+import { useConfirm } from "../_components/ConfirmDialog";
 
 export default function ExperienceAdminPage() {
+  const confirm = useConfirm();
   const [experiences, setExperiences] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -46,7 +48,7 @@ export default function ExperienceAdminPage() {
   };
 
   const handleEdit = (exp: any) => {
-    console.log("Editing experience:", exp);
+    // console.log("Editing experience:", exp);
     setEditingId(exp._id);
     setFormData({
       company: exp.company || "",
@@ -92,7 +94,7 @@ export default function ExperienceAdminPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this experience?")) return;
+    if (!(await confirm({ title: "Delete this experience?", description: "This will be permanently removed and cannot be undone." }))) return;
     const res = await fetch(`/api/experience?id=${id}`, { method: "DELETE" });
     if (res.ok) {
       toast.success("Experience deleted");
@@ -107,10 +109,10 @@ export default function ExperienceAdminPage() {
   );
 
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-center">
+    <div className="space-y-6 sm:space-y-8">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold font-space-grotesk tracking-tight">Work History</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold font-space-grotesk tracking-tight">Work History</h1>
           <p className="text-muted-foreground mt-1">Manage your professional career timeline and achievements.</p>
         </div>
         {!isFormOpen && (
@@ -122,7 +124,7 @@ export default function ExperienceAdminPage() {
       </div>
 
       {isFormOpen && (
-        <form onSubmit={handleSubmit} className="p-10 rounded-[2.5rem] bg-background border border-border space-y-6 shadow-2xl animate-in fade-in slide-in-from-top-4 border-t-4 border-t-primary">
+        <form onSubmit={handleSubmit} className="p-5 sm:p-10 rounded-3xl sm:rounded-[2.5rem] bg-background border border-border space-y-6 shadow-2xl animate-in fade-in slide-in-from-top-4 border-t-4 border-t-primary">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-black uppercase tracking-tight">
                 {editingId ? "Edit Experience" : "New Experience Record"}

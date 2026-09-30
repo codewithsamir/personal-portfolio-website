@@ -3,9 +3,11 @@ import { ArrowRight, Calendar, Clock, Eye } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { format } from "date-fns";
+import { cleanBlogTitle } from "@/lib/blog";
 
 export function BlogCard({ post, index }: { post: any; index: number }) {
   const date = post.publishedAt || post.createdAt;
+  const title = cleanBlogTitle(post.title);
 
   return (
     <AnimatedSection delay={index * 0.1} className="group h-full">
@@ -15,14 +17,14 @@ export function BlogCard({ post, index }: { post: any; index: number }) {
             {post.coverImage ? (
               <Image
                 src={post.coverImage}
-                alt={post.title}
+                alt={title}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover transition-transform duration-1000 group-hover:scale-110"
               />
             ) : (
-              <div className="absolute inset-0 flex items-center justify-center bg-muted/50 text-muted-foreground/5 font-black text-6xl italic uppercase font-space-grotesk tracking-widest pointer-events-none px-6 text-center">
-                {post.title}
+              <div className="absolute inset-0 flex items-center justify-center bg-muted/50 text-muted-foreground/5 font-black text-4xl md:text-5xl italic uppercase font-space-grotesk tracking-widest pointer-events-none px-6 text-center">
+                <span className="line-clamp-3 wrap-break-word">{title}</span>
               </div>
             )}
             <div className="absolute inset-0 bg-linear-to-t from-background/90 via-background/10 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-700" />
@@ -49,8 +51,11 @@ export function BlogCard({ post, index }: { post: any; index: number }) {
             </div>
 
             <div className="space-y-3 mb-6 flex-1">
-              <h3 className="text-2xl font-black font-space-grotesk tracking-tighter leading-tight group-hover:text-primary transition-colors">
-                {post.title}
+              <h3
+                title={title}
+                className="text-2xl font-black font-space-grotesk tracking-tighter leading-tight line-clamp-2 wrap-break-word group-hover:text-primary transition-colors"
+              >
+                {title}
               </h3>
               <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3 font-medium">
                 {post.excerpt}

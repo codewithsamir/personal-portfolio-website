@@ -9,13 +9,13 @@ interface DataTableProps {
 
 export function DataTable({ headers, children, className }: DataTableProps) {
   return (
-    <div className={cn("overflow-hidden rounded-[2rem] border border-border bg-background shadow-sm", className)}>
+    <div className={cn("overflow-hidden rounded-2xl sm:rounded-[2rem] border border-border bg-background shadow-sm", className)}>
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-muted/50 border-b border-border">
               {headers.map((header) => (
-                <th key={header} className="px-6 py-4 text-xs font-black uppercase tracking-widest text-muted-foreground">
+                <th key={header} className="px-4 sm:px-6 py-3 sm:py-4 text-xs font-black uppercase tracking-widest text-muted-foreground whitespace-nowrap">
                   {header}
                 </th>
               ))}
@@ -40,7 +40,7 @@ export function DataTableRow({ children, className }: { children: ReactNode; cla
 
 export function DataTableCell({ children, className, colSpan }: { children: ReactNode; className?: string; colSpan?: number }) {
   return (
-    <td className={cn("px-6 py-4 text-sm font-medium", className)} colSpan={colSpan}>
+    <td className={cn("px-4 sm:px-6 py-3 sm:py-4 text-sm font-medium", className)} colSpan={colSpan}>
       {children}
     </td>
   );

@@ -87,7 +87,7 @@ export async function DELETE(req: NextRequest) {
           await cloudinary.uploader.destroy(publicId);
         }
       } catch (cloudinaryError) {
-        console.error("Cloudinary delete error:", cloudinaryError);
+        // console.error("Cloudinary delete error:", cloudinaryError);
       }
     }
 
