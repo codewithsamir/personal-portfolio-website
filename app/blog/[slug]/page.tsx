@@ -38,10 +38,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: post.title,
     description: post.excerpt,
+    alternates: { canonical: `/blog/${post.slug}` },
+    authors: [{ name: "Samir Rain", url: "https://samirrain.com.np" }],
     openGraph: {
       title: post.title,
       description: post.excerpt,
       type: "article",
+      authors: ["Samir Rain"],
+      publishedTime: post.publishedAt || post.createdAt,
+      modifiedTime: post.updatedAt,
       url: `https://samirrain.com.np/blog/${post.slug}`,
       images: post.coverImage ? [{ url: post.coverImage, width: 1200, height: 630, alt: post.title }] : undefined,
     },

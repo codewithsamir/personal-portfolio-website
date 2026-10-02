@@ -21,62 +21,140 @@ import Certification from "@/models/Certification";
 import BlogModel from "@/models/Blog";
 
 import { Metadata } from "next";
+import { SITE_URL, PROFILE_IMAGE, PROFILE_LINKS } from "@/lib/site";
 
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata(): Promise<Metadata> {
   await dbConnect();
   const personal = await PersonalInfo.findOne().lean();
-  
-  if (!personal) return { title: "Portfolio" };
 
-  const name = personal.name || "Samir Rain";
-  const role = personal.role || "Full Stack Developer";
-  const summary = personal.summary || "Full Stack Developer with 3+ years of experience designing and delivering end-to-end web applications.";
+  const name = personal?.name || "Samir Rain";
+  const title = `${name} | Full Stack Developer in Nepal`;
+  // Hand-written so it stays within ~155 chars; the DB summary is too long for a snippet
+  const description = `${name} is a Full Stack Developer from Janakpur, Nepal with ${personal?.yearsOfExperience || "3+"} years of experience building fast, scalable web apps with React, Next.js, Django and Node.js.`;
 
   return {
-    metadataBase: new URL("https://samirrain.com.np"),
-    title: `${name} | ${role}`,
-    description: summary,
-    keywords: [
-      name,
-      role,
-      "Full Stack Developer Nepal",
-      "Next.js Developer",
-      "Django Developer",
-      "AI Web Developer",
-      "Software Engineer Janakpur",
-      "React Specialist",
-      `Portfolio of ${name}`,
-    ],
-    authors: [{ name: name }],
-    creator: name,
+    title: { absolute: title },
+    description,
+    alternates: { canonical: "/" },
     openGraph: {
-      title: `${name} | ${role}`,
-      description: summary,
-      url: "https://samirrain.com.np",
-      siteName: `${name} Portfolio`,
-      images: [
-        {
-          url: "https://samirrain.com.np/profile.jpeg",
-          width: 1200,
-          height: 630,
-          alt: `${name} Portfolio Overview`,
-        },
-      ],
+      type: "profile",
+      firstName: "Samir",
+      lastName: "Rain",
+      username: "codewithsamir",
+      url: SITE_URL,
+      siteName: name,
+      title,
+      description,
       locale: "en_US",
-      type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      title: `${name} | ${role}`,
-      description: summary,
-      images: ["https://samirrain.com.np/profile.jpeg"],
+      title,
+      description,
       creator: "@samir_rain",
     },
-    icons: {
-      icon: "/favicon.ico",
-    },
+  };
+}
+
+type JsonLdPersonal = {
+  name?: string;
+  role?: string;
+  summary?: string;
+  email?: string;
+  updatedAt?: string;
+  socials?: Record<string, string | undefined>;
+};
+
+function buildJsonLd(personal: JsonLdPersonal) {
+  const name = personal.name || "Samir Rain";
+  const socials = personal.socials || {};
+  const sameAs = Array.from(
+    new Set(
+      [
+        PROFILE_LINKS.github,
+        PROFILE_LINKS.linkedin,
+        PROFILE_LINKS.youtube,
+        socials.github,
+        socials.linkedin,
+        socials.twitter,
+        socials.instagram,
+        socials.facebook,
+        socials.youtube,
+        ...PROFILE_LINKS.otherSites,
+      ].filter((url) => typeof url === "string" && url.startsWith("http"))
+    )
+  );
+
+  const image = {
+    "@type": "ImageObject",
+    "@id": `${SITE_URL}/#profile-image`,
+    url: `${SITE_URL}${PROFILE_IMAGE}`,
+    contentUrl: `${SITE_URL}${PROFILE_IMAGE}`,
+    width: 800,
+    height: 800,
+    caption: name,
+  };
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
+        url: SITE_URL,
+        name,
+        alternateName: ["Samir Rain Portfolio", "codewithsamir"],
+        inLanguage: "en",
+        publisher: { "@id": `${SITE_URL}/#person` },
+      },
+      {
+        "@type": "ProfilePage",
+        "@id": `${SITE_URL}/#profilepage`,
+        url: SITE_URL,
+        name: `${name} | Full Stack Developer in Nepal`,
+        isPartOf: { "@id": `${SITE_URL}/#website` },
+        primaryImageOfPage: { "@id": `${SITE_URL}/#profile-image` },
+        dateModified: personal.updatedAt,
+        mainEntity: { "@id": `${SITE_URL}/#person` },
+      },
+      {
+        "@type": "Person",
+        "@id": `${SITE_URL}/#person`,
+        name,
+        alternateName: "codewithsamir",
+        url: SITE_URL,
+        image,
+        jobTitle: personal.role || "Full Stack Developer",
+        description: personal.summary,
+        email: personal.email ? `mailto:${personal.email}` : undefined,
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: "Janakpur",
+          addressRegion: "Madhesh Province",
+          addressCountry: "NP",
+        },
+        nationality: { "@type": "Country", name: "Nepal" },
+        alumniOf: {
+          "@type": "CollegeOrUniversity",
+          name: "Rajarshi Janak University",
+        },
+        knowsAbout: [
+          "Full Stack Development",
+          "JavaScript",
+          "TypeScript",
+          "React",
+          "Next.js",
+          "Node.js",
+          "Django",
+          "Python",
+          "MongoDB",
+          "AI Integration",
+        ],
+        sameAs,
+      },
+    ],
   };
 }
 
@@ -121,8 +199,14 @@ export default async function Home() {
     );
   }
 
+  const jsonLd = buildJsonLd(data.personal);
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+      />
       <Navbar />
       <Hero personalInfo={data.personal} />
       <About personalInfo={data.personal} projectsCount={data.projects.length} />

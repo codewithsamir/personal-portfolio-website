@@ -20,22 +20,24 @@ export async function generateMetadata(): Promise<Metadata> {
   await dbConnect();
   const personal = await PersonalInfo.findOne().lean();
 
-  const title = personal ? `${personal.name} | Blog` : "Blog | Portfolio";
-  const description = "Articles and notes on software architecture, frontend engineering, and building for the modern web.";
+  const name = personal?.name || "Samir Rain";
+  const title = "Blog";
+  const description = `Articles by ${name} on full stack web development, React, Next.js, Django, software architecture and building for the modern web.`;
 
   return {
     title,
     description,
+    alternates: { canonical: "/blog" },
     openGraph: {
-      title,
+      title: `${title} | ${name}`,
       description,
-      url: "https://samirrain.com.np/blog",
-      siteName: personal ? `${personal.name} Portfolio` : "Portfolio",
+      url: "/blog",
+      siteName: name,
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: `${title} | ${name}`,
       description,
     },
   };

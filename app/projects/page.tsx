@@ -20,33 +20,26 @@ export async function generateMetadata(): Promise<Metadata> {
   await dbConnect();
   const personal = await PersonalInfo.findOne().lean();
   
-  const title = personal ? `${personal.name} | Projects` : "Projects | Portfolio";
-  const description = "A comprehensive gallery of my professional work, research, and technical experiments. Each project represents a unique challenge solved with modern architecture.";
+  const name = personal?.name || "Samir Rain";
+  const title = "Projects";
+  const description = `Web development projects by ${name}, a Full Stack Developer in Nepal: real-world apps built with React, Next.js, Django, Node.js and MongoDB.`;
 
   return {
     title,
     description,
+    alternates: { canonical: "/projects" },
     openGraph: {
-      title,
+      title: `${title} | ${name}`,
       description,
-      url: "https://samirrain.com.np/projects",
-      siteName: personal ? `${personal.name} Portfolio` : "Portfolio",
-      images: [
-        {
-          url: "https://samirrain.com.np/profile.jpeg",
-          width: 1200,
-          height: 630,
-          alt: title,
-        },
-      ],
+      url: "/projects",
+      siteName: name,
       locale: "en_US",
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: `${title} | ${name}`,
       description,
-      images: ["https://samirrain.com.np/profile.jpeg"],
     },
   };
 }
@@ -70,9 +63,14 @@ export default async function AllProjectsPage() {
             description="A comprehensive gallery of my professional work, research, and technical experiments. Each project represents a unique challenge solved with modern architecture."
           />
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 mt-20">
+          <div className="flex flex-wrap justify-center gap-10 mt-20">
             {projects.map((project: any, i: number) => (
-              <ProjectCard key={project._id} project={project} index={i} />
+              <div
+                key={project._id}
+                className="w-full md:w-[calc((100%-2.5rem)/2)] lg:w-[calc((100%-5rem)/3)]"
+              >
+                <ProjectCard project={project} index={i} />
+              </div>
             ))}
           </div>
           

@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
+  alternates: { canonical: "/privacy" },
   description: "How this site collects, uses, and protects your information.",
 };
 
