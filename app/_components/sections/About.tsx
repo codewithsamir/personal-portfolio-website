@@ -51,8 +51,8 @@ export function About({ personalInfo, projectsCount = 0 }: { personalInfo: any, 
 
                      <div className="relative rounded-full overflow-hidden border-[6px] border-background aspect-square shadow-2xl ring-1 ring-border bg-muted">
                         <Image
-                           src={personalInfo.profileImage || "/profile.jpeg"}
-                           alt={personalInfo.name}
+                           src={personalInfo.profileImage || "/samir-rain.jpg"}
+                           alt={`${personalInfo.name}, Full Stack Developer from Janakpur, Nepal`}
                            fill
                            sizes="(max-width: 768px) 100vw, 33vw"
                            className="object-cover object-top group-hover:scale-110 transition-transform duration-700"

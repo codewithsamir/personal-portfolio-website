@@ -19,6 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 1,
+      images: ['https://samirrain.com.np/samir-rain.jpg'],
     },
     {
       url: 'https://samirrain.com.np/projects',

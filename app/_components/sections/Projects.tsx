@@ -25,9 +25,15 @@ export function Projects({ projects }: { projects: any[] }) {
           description="A selection of my high-impact technical projects. Focused on performance, scalability, and user experience."
         />
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16">
+        {/* Flex-wrap instead of grid so an incomplete last row stays centered */}
+        <div className="flex flex-wrap justify-center gap-8 mt-16">
           {displayProjects.map((project, idx) => (
-            <ProjectCard key={project._id || idx} project={project} index={idx} />
+            <div
+              key={project._id || idx}
+              className="w-full md:w-[calc((100%-2rem)/2)] lg:w-[calc((100%-4rem)/3)]"
+            >
+              <ProjectCard project={project} index={idx} />
+            </div>
           ))}
         </div>
 
