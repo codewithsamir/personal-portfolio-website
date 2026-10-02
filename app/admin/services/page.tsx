@@ -5,7 +5,7 @@ import { Button } from "@/app/_components/ui/button";
 import { Input } from "@/app/_components/ui/input";
 import { Textarea } from "@/app/_components/ui/textarea";
 import { toast } from "sonner";
-import { Plus, Trash2, Sparkles, Code, Layout, Link as LinkIcon, Smartphone, Database } from "lucide-react";
+import { Plus, Trash2, Edit3, Sparkles, Code, Layout, Link as LinkIcon, Smartphone, Database } from "lucide-react";
 import { useConfirm } from "../_components/ConfirmDialog";
 
 const availableIcons = [
@@ -21,11 +21,9 @@ export default function ServicesAdminPage() {
   const [services, setServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
-  const [newService, setNewService] = useState({
-    title: "",
-    description: "",
-    icon: "Code",
-  });
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const emptyService = { title: "", description: "", icon: "Code" };
+  const [newService, setNewService] = useState(emptyService);
 
   useEffect(() => {
     fetchServices();
@@ -38,19 +36,37 @@ export default function ServicesAdminPage() {
     setLoading(false);
   };
 
-  const handleAddService = async (e: React.FormEvent) => {
+  const resetForm = () => {
+    setIsAdding(false);
+    setEditingId(null);
+    setNewService(emptyService);
+  };
+
+  const handleEdit = (service: any) => {
+    setEditingId(service._id);
+    setNewService({
+      title: service.title || "",
+      description: service.description || "",
+      icon: service.icon || "Code",
+    });
+    setIsAdding(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleSaveService = async (e: React.FormEvent) => {
     e.preventDefault();
     const res = await fetch("/api/services", {
-      method: "POST",
+      method: editingId ? "PUT" : "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newService),
+      body: JSON.stringify(editingId ? { ...newService, _id: editingId } : newService),
     });
 
     if (res.ok) {
-      toast.success("Service added!");
-      setIsAdding(false);
-      setNewService({ title: "", description: "", icon: "Code" });
+      toast.success(editingId ? "Service updated!" : "Service added!");
+      resetForm();
       fetchServices();
+    } else {
+      toast.error(editingId ? "Failed to update service" : "Failed to add service");
     }
   };
 
@@ -72,14 +88,18 @@ export default function ServicesAdminPage() {
           <h1 className="text-2xl sm:text-3xl font-bold font-space-grotesk">Services</h1>
           <p className="text-muted-foreground mt-1">Define what you offer to clients.</p>
         </div>
-        <Button onClick={() => setIsAdding(!isAdding)} className="rounded-xl font-bold">
+        <Button onClick={() => (isAdding ? resetForm() : setIsAdding(true))} className="rounded-xl font-bold">
           <Plus size={18} className="mr-2" />
           Add Service
         </Button>
       </div>
 
       {isAdding && (
-        <form onSubmit={handleAddService} className="p-5 sm:p-8 rounded-3xl sm:rounded-[2rem] bg-background border border-border space-y-6 shadow-xl animate-in fade-in slide-in-from-top-4">
+        <form onSubmit={handleSaveService} className="p-5 sm:p-8 rounded-3xl sm:rounded-[2rem] bg-background border border-border space-y-6 shadow-xl animate-in fade-in slide-in-from-top-4">
+          <h2 className="text-xl font-bold font-space-grotesk">
+            {editingId ? "Edit Service" : "New Service"}
+          </h2>
+
           <div className="space-y-2">
             <label className="text-sm font-bold">Service Title</label>
             <Input 
@@ -121,29 +141,37 @@ export default function ServicesAdminPage() {
           </div>
 
           <div className="flex justify-end gap-4">
-            <Button type="button" variant="ghost" onClick={() => setIsAdding(false)}>Cancel</Button>
-            <Button type="submit" className="px-8 font-bold">Create Service</Button>
+            <Button type="button" variant="ghost" onClick={resetForm}>Cancel</Button>
+            <Button type="submit" className="px-8 font-bold">{editingId ? "Update Service" : "Create Service"}</Button>
           </div>
         </form>
       )}
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {services.map((service) => (
+        {services.map((service) => {
+          const ServiceIcon = availableIcons.find((i) => i.name === service.icon)?.icon || Sparkles;
+          return (
           <div key={service._id} className="p-5 sm:p-8 rounded-3xl sm:rounded-[2.5rem] bg-background border border-border hover:border-primary/30 transition-all group flex flex-col items-start gap-6">
             <div className="flex justify-between w-full items-start">
                <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
-                 <Sparkles size={24} />
+                 <ServiceIcon size={24} />
                </div>
-               <button onClick={() => handleDelete(service._id)} className="p-2 text-muted-foreground hover:text-destructive">
-                 <Trash2 size={18} />
-               </button>
+               <div className="flex gap-1">
+                 <button onClick={() => handleEdit(service)} className="p-2 text-muted-foreground hover:text-primary" aria-label="Edit service">
+                   <Edit3 size={18} />
+                 </button>
+                 <button onClick={() => handleDelete(service._id)} className="p-2 text-muted-foreground hover:text-destructive" aria-label="Delete service">
+                   <Trash2 size={18} />
+                 </button>
+               </div>
             </div>
             <div>
               <h3 className="text-xl font-bold font-space-grotesk mb-2">{service.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{service.description}</p>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
