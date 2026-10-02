@@ -90,7 +90,7 @@ export function Hero({ personalInfo }: { personalInfo: any }) {
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="rounded-2xl px-12 h-16 text-lg font-black uppercase tracking-widest border-2 hover:bg-muted/50 transition-all backdrop-blur-md">
-              <a href={personalInfo.resume} target="_blank">
+              <a href="/api/resume" target="_blank" rel="noopener noreferrer">
                 Curriculum Vitae
                 <Download className="ml-2 h-5 w-5" />
               </a>
