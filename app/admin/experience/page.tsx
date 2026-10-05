@@ -9,24 +9,40 @@ import { Plus, Trash2, Briefcase, MapPin, Calendar, Edit3, X, Save } from "lucid
 import { DataTable, DataTableRow, DataTableCell } from "../_components/DataTable";
 import { useConfirm } from "../_components/ConfirmDialog";
 
+type ExperienceRecord = {
+  _id: string;
+  company?: string;
+  role?: string;
+  period?: string;
+  description?: string;
+  location?: string;
+  order?: number;
+};
+
+type ExperienceFormData = {
+  company: string;
+  role: string;
+  period: string;
+  description: string;
+  location: string;
+  order: number;
+};
+
 export default function ExperienceAdminPage() {
   const confirm = useConfirm();
-  const [experiences, setExperiences] = useState<any[]>([]);
+  const [experiences, setExperiences] = useState<ExperienceRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ExperienceFormData>({
     company: "",
     role: "",
     period: "",
     description: "",
     location: "",
+    order: 1,
   });
-
-  useEffect(() => {
-    fetchExperiences();
-  }, []);
 
   const fetchExperiences = async () => {
     const res = await fetch("/api/experience");
@@ -35,6 +51,10 @@ export default function ExperienceAdminPage() {
     setLoading(false);
   };
 
+  useEffect(() => {
+    fetchExperiences();
+  }, []);
+
   const resetForm = () => {
     setFormData({
       company: "",
@@ -42,54 +62,54 @@ export default function ExperienceAdminPage() {
       period: "",
       description: "",
       location: "",
+      order: 1,
     });
     setEditingId(null);
     setIsFormOpen(false);
   };
 
-  const handleEdit = (exp: any) => {
-    // console.log("Editing experience:", exp);
+  const handleEdit = (exp: ExperienceRecord) => {
     setEditingId(exp._id);
     setFormData({
       company: exp.company || "",
       role: exp.role || "",
       period: exp.period || "",
-      description: exp.description || (exp.bullets ? exp.bullets.join("\n") : ""),
+      description: exp.description || "",
       location: exp.location || "",
+      order: typeof exp.order === "number" ? exp.order : 1,
     });
     setIsFormOpen(true);
-    // Scroll to form
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.description) {
-        toast.error("Description is required");
-        return;
+      toast.error("Description is required");
+      return;
     }
 
     const method = editingId ? "PUT" : "POST";
     const payload = editingId ? { ...formData, id: editingId } : formData;
 
     try {
-        const res = await fetch("/api/experience", {
-          method,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
+      const res = await fetch("/api/experience", {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-        if (res.ok) {
-          toast.success(editingId ? "Experience updated!" : "Experience added!");
-          resetForm();
-          fetchExperiences();
-        } else {
-          const err = await res.json();
-          toast.error(err.error || "Something went wrong");
-        }
-    } catch (error) {
-        toast.error("Failed to save experience");
+      if (res.ok) {
+        toast.success(editingId ? "Experience updated!" : "Experience added!");
+        resetForm();
+        fetchExperiences();
+      } else {
+        const err = await res.json();
+        toast.error(err.error || "Something went wrong");
+      }
+    } catch {
+      toast.error("Failed to save experience");
     }
   };
 
@@ -127,7 +147,7 @@ export default function ExperienceAdminPage() {
         <form onSubmit={handleSubmit} className="p-5 sm:p-10 rounded-3xl sm:rounded-[2.5rem] bg-background border border-border space-y-6 shadow-2xl animate-in fade-in slide-in-from-top-4 border-t-4 border-t-primary">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-black uppercase tracking-tight">
-                {editingId ? "Edit Experience" : "New Experience Record"}
+              {editingId ? "Edit Experience" : "New Experience Record"}
             </h2>
             <button type="button" onClick={resetForm} className="p-2 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-all">
                 <X size={20}/>
@@ -176,6 +196,20 @@ export default function ExperienceAdminPage() {
                 placeholder="e.g. Remote / New York"
                 className="rounded-xl h-12 border-2 focus:border-primary transition-all"
                 required
+              />
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-sm font-black uppercase tracking-widest text-muted-foreground/70 ml-1">Priority / Order</label>
+              <Input
+                type="number"
+                min={0}
+                value={formData.order}
+                onChange={(e) => setFormData({ ...formData, order: Number(e.target.value) || 0 })}
+                placeholder="0"
+                className="rounded-xl h-12 border-2 focus:border-primary transition-all"
               />
             </div>
           </div>

@@ -19,6 +19,7 @@ import Service from "@/models/Service";
 import EducationModel from "@/models/Education";
 import Certification from "@/models/Certification";
 import BlogModel from "@/models/Blog";
+import { sortExperiencesByLatest } from "@/lib/experience";
 
 import { Metadata } from "next";
 import { SITE_URL, PROFILE_IMAGE, PROFILE_LINKS } from "@/lib/site";
@@ -164,7 +165,7 @@ async function getPortfolioData() {
   const [personal, projects, experience, skills, services, education, certifications, posts] = await Promise.all([
     PersonalInfo.findOne().lean(),
     Project.find().sort({ createdAt: -1 }).lean(),
-    ExperienceModel.find().sort({ order: 1, createdAt: -1 }).lean(),
+    ExperienceModel.find().lean(),
     Skill.find().sort({ order: 1 }).lean(),
     Service.find().sort({ order: 1 }).lean(),
     EducationModel.find().sort({ order: 1, createdAt: -1 }).lean(),
@@ -172,10 +173,12 @@ async function getPortfolioData() {
     BlogModel.find({ published: true }).sort({ publishedAt: -1, createdAt: -1 }).lean(),
   ]);
 
+  const sortedExperience = sortExperiencesByLatest(experience as any[]);
+
   return {
     personal: JSON.parse(JSON.stringify(personal)),
     projects: JSON.parse(JSON.stringify(projects)),
-    experience: JSON.parse(JSON.stringify(experience)),
+    experience: JSON.parse(JSON.stringify(sortedExperience)),
     skills: JSON.parse(JSON.stringify(skills)),
     services: JSON.parse(JSON.stringify(services)),
     education: JSON.parse(JSON.stringify(education)),

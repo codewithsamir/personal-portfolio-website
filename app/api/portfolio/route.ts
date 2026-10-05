@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
+import { sortExperiencesByLatest } from "@/lib/experience";
 import PersonalInfo from "@/models/PersonalInfo";
 import Project from "@/models/Project";
 import Experience from "@/models/Experience";
@@ -14,7 +15,7 @@ export async function GET() {
     const [personal, projects, experience, skills, services, education] = await Promise.all([
       PersonalInfo.findOne(),
       Project.find().sort({ createdAt: -1 }),
-      Experience.find().sort({ order: 1, createdAt: -1 }),
+      Experience.find().lean(),
       Skill.find().sort({ order: 1 }),
       Service.find().sort({ order: 1 }),
       Education.find().sort({ order: 1, createdAt: -1 }),
@@ -23,7 +24,7 @@ export async function GET() {
     return NextResponse.json({
       personal,
       projects,
-      experience,
+      experience: sortExperiencesByLatest(experience as any[]),
       skills,
       services,
       education,
