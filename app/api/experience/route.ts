@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
+import { sortExperiencesByLatest } from "@/lib/experience";
 import Experience from "@/models/Experience";
 import mongoose from "mongoose";
 
@@ -10,8 +11,8 @@ const ExperienceModel = mongoose.models.Experience || Experience;
 export async function GET() {
   try {
     await dbConnect();
-    const experiences = await ExperienceModel.find({}).sort({ period: -1 });
-    return NextResponse.json(experiences);
+    const experiences = await ExperienceModel.find({}).lean();
+    return NextResponse.json(sortExperiencesByLatest(experiences as any[]));
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
